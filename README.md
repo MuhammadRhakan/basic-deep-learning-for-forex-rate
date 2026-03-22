@@ -1,45 +1,51 @@
 # Forecasting Currency Volatility: A Deep Learning Study (GBP/IDR)
 
 ## 📌 Executive Summary
-This project explores the application of Recurrent Neural Networks (RNN) to predict the exchange rate between the British Pound (GBP) and the Indonesian Rupiah (IDR). Utilizing real-world data from Yahoo Finance, the study implements a "Vanilla" RNN architecture to understand how sequential dependencies in financial markets can be modeled using deep learning.
-**Key Objective:** To transition from static data analysis to temporal (time-based) forecasting, evaluating the strengths and limitations of basic RNNs in high-volatility environments.
+This project explores fundamental deep learning applications to predict the exchange rate between the British Pound (GBP) and the Indonesian Rupiah (IDR). The study implements Vanilla RNN, LSTM, and GRU architectures to understand how temporal dependencies in financial domain can be captured by deep learning.
 
-## 🛠 Tech Stack & Tools
+## 🛠 Framework and Tools
 * **Data Acquisition:** `yfinance` (Yahoo Finance API)
 * **Data Manipulation:** `Pandas`, `NumPy`
-* **Visualization:** `Matplotlib`, `Seaborn`
+* **Visualization:** `Matplotlib`, `Plotly`
 * **Deep Learning Framework:** `TensorFlow` / `Keras`
 * **Preprocessing:** `MinMaxScaler` (Scikit-Learn)
 
-## 📈 Methodology
+## 🔑 Key Components
 1. **Data Pipeline**
     - **Ticker:** GBPIDR=X
-    - **Period:** Historical daily closing prices.
+    - **Period:** Historical daily closing prices (2015-2026).
     - **Scaling:** Data was normalized to a range of $[0, 1]$ to ensure stable gradient descent during the training of the neural network.
-2. **The Model Architecture**
-For this introductory exploration, a Vanilla RNN was chosen. While more complex architectures like LSTMs exist, the Vanilla RNN serves as the fundamental building block for understanding:
-    - Hidden State Persistence: How the model "remembers" previous days' prices.
-    - Sequential Mapping: Mapping a look-back window (e.g., 30 days) to a single future prediction.
-3. **Training Process**
+    - **Window Sliding:** Using the past 30 days to predict the next day.
+2. **Architecture**
+    - **Vanilla RNN:** Captures basic short-term sequential dependencies
+    - **LSTM:** Designed to retain long-term memory via input, forget, and output gates
+    - **GRU:** Simplified LSTM variant by using fewer gates
+3. **Training**
     - **Loss Function:** Mean Squared Error (MSE)
     - **Optimizer:** Adam
-    - **Validation:** A split-sample approach was used to test the model on unseen data, ensuring the model isn't simply memorizing the training set.
+    - **Data Ratio:** Train/validation/test split to evaluate generalization.
+    - **Callback:** `EarlyStopping` and `ReduceLROnPlateau` to prevent overfitting and adjust learning rate.
 
-## 🔍 Key Findings & Analysis
-### The "Lag" Effect
-In the resulting visualizations, the model shows a high degree of correlation with the actual price. However, a critical observation in this stage of deep learning is the "lag" effect—where the model often predicts the next day's price to be very close to today's price.
-### Performance in Volatility
-The model effectively identifies general trends (Bullish/Bearish) but, like most baseline RNNs, struggles with "Black Swan" events or sudden spikes inherent in the Forex market.
+## 🔍 Key Findings
+| **Model** | **MSE** | **RMSE** | **MAE** |
+|-------|-----|------|-----|
+| RNN | 1,231,925.92 | 1,109.92 | 1,059.07 |
+| LSTM | 1,668,575.98 | 1,291.73 | 1,177.99 |
+| GRU | 969,015.54 | 984.39 | 852.75 |
 
-## 🚀 Future Roadmap (Learning Progression)
-As this represents an "Early Phase" project, the following improvements are planned to increase predictive accuracy:
-1. **Transition to LSTM/GRU:** Implementing gated units to solve the vanishing gradient problem.
-2. **Multivariate Analysis:** Incorporating external features like Interest Rates or Oil Prices to provide more context to the model.
-3. **Hyperparameter Optimization:** Using Keras Tuner to find the optimal look-back window and neuron density.
+**Observations:**
+- GRU performed best, showing the lowest errors across all metrics.
+- LSTM is underperformed, likely due to highly volatile, noisy univariate data, where long-term memory offers limited advantage.
+- Vanilla RNN does not produce the best result, but still higher than LSTM
+
+**Data Behavior Insights:**
+- GBP/IDR exchange rates exhibit high volatility and sudden spikes (around 2016 and 2020 pandemic), being challenging to predict accurately and precisely.
+- The models operate on a single feature (closing price), limiting the ability to capture broader market influences.
+- This implementation revelas the nature of financial data where data is highly volatile, non-stationary, and uncertain, which require specific treatment.
 
 ## 📂 Project Structure
-* `Foreign_Exchange_Temporal_Forecasting.ipynb`: Main development notebook.
-* `data/`: (Optional) Cached CSVs of processed data.
-* `assets/`: Visualizations and performance plots.
+* `notebook/`: Central script containint preprocessing, pipeline, and evaluation
+* `images/`: Visualizations and performance plots.
 
-*Note: This project is for educational purposes and exposure to Deep Learning workflows. It is not intended for financial or algorithmic trading advice*.
+**Notes:**
+> The notebook is still being actively developed, so any updates may still be added in the future.
